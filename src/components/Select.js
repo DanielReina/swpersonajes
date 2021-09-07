@@ -10,10 +10,29 @@ const Options = styled.div`
   display: flex;
   justify-content: center;
   p {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
     margin: 20px;
+    text-align: center;
   }
   p:hover {
     cursor: pointer;
+  }
+`;
+const Small = styled.small`
+  display: flex;
+  justify-content: center;
+`;
+const SortBy = styled.h2`
+  font-family: "Coustard", serif;
+  font-size: 24px;
+  font-weight: 300;
+  text-align: center;
+  margin-top: 100px;
+  margin-bottom: -50px;
+  @media (max-width: 400px) {
+    margin-top: 50px;
   }
 `;
 
@@ -27,6 +46,7 @@ const Select = () => {
 
   useEffect(() => {
     getCharacterList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getCharacterList = async () => {
     let url = "https://swapi.dev/api/people";
@@ -38,26 +58,23 @@ const Select = () => {
       url = result.data.next;
       result = await axios.get(url);
     }
-    console.log(characterArray.length);
     setcharacterList(characterArray);
     setLoading(false);
   };
 
   const getCharacter = async (value) => {
-    setLoadingCharacter(true)
+    setLoadingCharacter(true);
     try {
       const response = await axios.get(value);
-      setcharacter(response.data)
-      
+      setcharacter(response.data);
     } catch (error) {
       console.log(error);
     }
-    setLoadingCharacter(false)
+    setLoadingCharacter(false);
   };
 
   const getOptionSort = (value) => {
     if (value === "name") {
-      console.log("name");
       setLoading(true);
       setcharacterList(
         characterList.sort(function (a, b) {
@@ -72,23 +89,19 @@ const Select = () => {
       );
       setLoading(false);
     } else if (value === "height") {
-      
       setLoading(true);
       setcharacterList(
         characterList.sort(function (a, b) {
-          if (a.height==='unknown') {
-            a.height=0
+          if (a.height === "unknown") {
+            a.height = 0;
           }
           if (b.height === "unknown") {
-            b.height=0
+            b.height = 0;
           }
           return a.height - b.height;
         })
       );
-      console.log(characterList);
       setLoading(false);
-    } else {
-      console.log("none");
     }
     setSelectedOption(value);
   };
@@ -100,44 +113,62 @@ const Select = () => {
           {loading ? (
             <Spinner />
           ) : (
-            <Form.Select
-              aria-label="Default select example"
-              onChange={(e) => {
-                getCharacter(e.target.value);
-              }}
-            >
-              <option>Elige un personaje</option>
-              {characterList.map((object, index) => (
-                <option key={index} value={object.url}>
-                  {object.name}
-                </option>
-              ))}
-            </Form.Select>
+            <>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={(e) => {
+                  getCharacter(e.target.value);
+                }}
+                id="select"
+              >
+                <option>Elige un personaje</option>
+                {characterList.map((object, index) => (
+                  <option key={index} value={object.url}>
+                    {object.name}
+                  </option>
+                ))}
+              </Form.Select>
+
+              <Small>
+                {selectedOption === "name" ? (
+                  "*Lista ordenada alfabéticamente."
+                ) : selectedOption === "height" ? (
+                  "*Lista ordenada por altura."
+                ) : selectedOption === "" ? (
+                  "*Lista desordenada."
+                ) : (
+                  <></>
+                )}
+              </Small>
+
+              <SortBy>Ordenar por</SortBy>
+              <Options className="mt-5 mb-5">
+                <p
+                  onClick={() => getOptionSort("name")}
+                  className={
+                    selectedOption === "name" ? "selected" : "non_selected"
+                  }
+                >
+                  Nombre
+                </p>
+                <p
+                  onClick={() => getOptionSort("height")}
+                  className={
+                    selectedOption === "height" ? "selected" : "non_selected"
+                  }
+                >
+                  Estatura
+                </p>
+              </Options>
+            </>
           )}
-          <Options>
-            <p onClick={() => getOptionSort("name")}>
-              {selectedOption === "name" ? (
-                <b>Ordenar por nombres</b>
-              ) : (
-                "Ordenar por nombres"
-              )}
-            </p>
-            <p onClick={() => getOptionSort("height")}>
-              {selectedOption === "height" ? (
-                <b>Ordenar por estatura</b>
-              ) : (
-                "Ordenar por estatura"
-              )}
-            </p>
-          </Options>
-          {loadingCharacter ? <Spinner /> :(
-            
-              Object.keys(character).length !== 0 ? (
-                <Target character={character} />
-              ) : (
-                <></>
-              ))
-            }
+          {loadingCharacter ? (
+            <Spinner />
+          ) : Object.keys(character).length !== 0 ? (
+            <Target character={character} />
+          ) : (
+            <></>
+          )}
         </Col>
       </Row>
     </Container>

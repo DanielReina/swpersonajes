@@ -1,25 +1,21 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-import styled from "@emotion/styled";
 
-const Properties = styled.ul`
-  li {
-    list-style: none;
-  }
-`;
+
+
 const Target = ({ character }) => {
   return (
-    <Card style={{ width: "18rem" }}>
+    <Card style={{ width: "18rem" }} id='card'>
       <Card.Body>
         <Card.Title>{character.name}</Card.Title>
         <div className="card-text">
-          <Properties>
+          <ul>
             {character.height === "none" ||
             character.height === "n/a" ||
             character.height === "unknown" ? (
               <></>
             ) : (
-              <li>Altura: {character.height}</li>
+              <li>Altura: {character.height} cms</li>
             )}
 
             {character.hair_color === "none" ||
@@ -37,7 +33,7 @@ const Target = ({ character }) => {
             ) : (
               <li>Género: {character.gender}</li>
             )}
-          </Properties>
+          </ul>
         </div>
       </Card.Body>
     </Card>

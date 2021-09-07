@@ -1,3 +1,37 @@
-#selectContainer{
-    margin-top:30px;
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  border: none;
+  outline: none;
+}
+#selectContainer {
+  margin-top: 30px;
+}
+#select {
+  margin: 0px auto;
+  max-width: 300px;
+  margin-top: 100px;
+}
+#card {
+  margin: 0px auto;
+  margin-top: 130px;
+}
+.selected {
+  background-color: black;
+  color: yellow;
+  font-family: "Coustard", serif;
+}
+@media (max-width: 800px) {
+  #card {
+    margin: 0px auto;
+    margin-top: 0px;
+  }
+}
+
+@media (max-width: 400px) {
+  #select {
+    margin-top: 30px;
+  }
 }
