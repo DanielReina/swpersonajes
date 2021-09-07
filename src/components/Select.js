@@ -20,79 +20,77 @@ const Options = styled.div`
 const Select = () => {
   const [characterList, setcharacterList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [heightList, setheightList] = useState([]);
-  const [alphabeticalList, setAlphabeticalList] = useState([]);
-  const [selectedList, setSelectedList] = useState([]);
+  const [loadingCharacter, setLoadingCharacter] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [character, setcharacter] = useState([]);
   let characterArray = [];
-  let heightArray = [];
-  let alphabeticalArray = [];
 
   useEffect(() => {
-    
-      const getCharacterList = async () => {
-        let url = "https://swapi.dev/api/people";
-        let result = await axios.get(url);
-        while (result.data.next != null) {
-          result.data.results.forEach((element) => {
-            characterArray.push(element);
-          });
-          url = result.data.next;
-          result = await axios.get(url);
-        }
-        setcharacterList(characterArray);
-      };
-      getCharacterList();
-
-      setSelectedList(characterList);
-      if (characterList.length > 0) {
-        setLoading(false);
-      } else {
-        setLoading(true);
-      }
-    
-    
-  }, [characterArray, characterList]);
-
+    getCharacterList();
+  }, []);
+  const getCharacterList = async () => {
+    let url = "https://swapi.dev/api/people";
+    let result = await axios.get(url);
+    while (result.data.next != null) {
+      result.data.results.forEach((element) => {
+        characterArray.push(element);
+      });
+      url = result.data.next;
+      result = await axios.get(url);
+    }
+    console.log(characterArray.length);
+    setcharacterList(characterArray);
+    setLoading(false);
+  };
 
   const getCharacter = async (value) => {
-    setLoading(true);
+    setLoadingCharacter(true)
     try {
       const response = await axios.get(value);
-      setcharacter(response.data);
+      setcharacter(response.data)
+      
     } catch (error) {
       console.log(error);
     }
+    setLoadingCharacter(false)
   };
 
-  const getOption = (value) => {
-    setSelectedOption(value);
-    let arr1 = [...characterList]
-    let arr2 = [...characterList]
-    heightArray = arr1.sort(function (a, b) {
-        return a.height - b.height;
-      })
-    setheightList(heightArray);
-
-    alphabeticalArray = arr2.sort(function (a, b) {
-        if (a.name > b.name) {
-          return 1;
-        }
-        if (a.name < b.name) {
-          return -1;
-        }
-        return 0;
-      })
-    setAlphabeticalList(alphabeticalArray);
-
-    if (selectedOption === "name") {
-      console.log(alphabeticalArray);
-      setSelectedList(alphabeticalList);
-    } else if (selectedOption === "height") {
-      console.log(heightArray);
-      setSelectedList(heightList);
+  const getOptionSort = (value) => {
+    if (value === "name") {
+      console.log("name");
+      setLoading(true);
+      setcharacterList(
+        characterList.sort(function (a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          return 0;
+        })
+      );
+      setLoading(false);
+    } else if (value === "height") {
+      
+      setLoading(true);
+      setcharacterList(
+        characterList.sort(function (a, b) {
+          if (a.height==='unknown') {
+            a.height=0
+          }
+          if (b.height === "unknown") {
+            b.height=0
+          }
+          return a.height - b.height;
+        })
+      );
+      console.log(characterList);
+      setLoading(false);
+    } else {
+      console.log("none");
     }
+    setSelectedOption(value);
   };
 
   return (
@@ -109,7 +107,7 @@ const Select = () => {
               }}
             >
               <option>Elige un personaje</option>
-              {selectedList.map((object, index) => (
+              {characterList.map((object, index) => (
                 <option key={index} value={object.url}>
                   {object.name}
                 </option>
@@ -117,14 +115,14 @@ const Select = () => {
             </Form.Select>
           )}
           <Options>
-            <p onClick={() => getOption("name")}>
+            <p onClick={() => getOptionSort("name")}>
               {selectedOption === "name" ? (
                 <b>Ordenar por nombres</b>
               ) : (
                 "Ordenar por nombres"
               )}
             </p>
-            <p onClick={() => getOption("height")}>
+            <p onClick={() => getOptionSort("height")}>
               {selectedOption === "height" ? (
                 <b>Ordenar por estatura</b>
               ) : (
@@ -132,11 +130,14 @@ const Select = () => {
               )}
             </p>
           </Options>
-          {Object.keys(character).length !== 0 ? (
-            <Target character={character} />
-          ) : (
-            <></>
-          )}
+          {loadingCharacter ? <Spinner /> :(
+            
+              Object.keys(character).length !== 0 ? (
+                <Target character={character} />
+              ) : (
+                <></>
+              ))
+            }
         </Col>
       </Row>
     </Container>
