@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 const Nav = styled.nav`
   height: 70px;
   line-height: 70px;
-  background-image: url("star-wars-backgrounds-25.jpeg");
+  background-image: url("https://starwarsblog.starwars.com/wp-content/uploads/2020/04/star-wars-backgrounds-25.jpg");
   p {
     font-family: "Coustard", serif;
     color: yellow;
